@@ -6,7 +6,11 @@ router.get("/", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
-  res.status(201).send({ message: "Products POST" });
+  const product = {
+    name: req.body.name,
+    preco: req.body.preco
+  }
+  res.status(201).send({ message: "Products POST", createdProduct: product });
 });
 
 router.get("/:id", (req, res, next) => {
