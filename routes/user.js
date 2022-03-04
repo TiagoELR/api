@@ -48,4 +48,42 @@ router.post("/", (req, res, next) => {
   });
 });
 
+router.post("/login", (req, res, next) => {
+  mysql.getConnection((err, conn) => {
+    if (err) {
+      return res.status(500).send({ error: err });
+    }
+    conn.query(
+      "SELECT * FROM users WHERE email = ?",
+      [req.body.email],
+      (error, result, fields) => {
+        conn.release();
+        if (error) {
+          return res.status(500).send({ error: error });
+        }
+        if (result.length < 1) {
+          return res.status(401).send({ message: "Authentication failure" });
+        }
+        bcrypt.compare(
+          req.body.password,
+          result[0].password,
+          (error, result) => {
+            if (error) {
+              return res
+                .status(401)
+                .send({ message: "Authentication failure" });
+            }
+            if (result) {
+              return res
+                .status(200)
+                .send({ message: "Authenticated successfully" });
+            }
+            return res.status(401).send({ message: "Authentication failure" });
+          }
+        );
+      }
+    );
+  });
+});
+
 module.exports = router;
