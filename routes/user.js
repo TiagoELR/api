@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mysql = require("../mysql").pool;
 const bcrypt = require("bcrypt");
-
+const jwt = require("jsonwebtoken");
 router.post("/", (req, res, next) => {
   mysql.getConnection((err, conn) => {
     if (err) {
@@ -67,16 +67,24 @@ router.post("/login", (req, res, next) => {
         bcrypt.compare(
           req.body.password,
           result[0].password,
-          (error, result) => {
-            if (error) {
+          (bkError, bkResult) => {
+            if (bkError) {
               return res
                 .status(401)
                 .send({ message: "Authentication failure" });
             }
-            if (result) {
+            if (bkResult) {
+              const token = jwt.sign(
+                {
+                  id: result[0].id,
+                  email: result[0].email
+                },
+                process.env.JWT_KEY,
+                { expiresIn: "6h" }
+              );
               return res
                 .status(200)
-                .send({ message: "Authenticated successfully" });
+                .send({ message: "Authenticated successfully", token: token });
             }
             return res.status(401).send({ message: "Authentication failure" });
           }
