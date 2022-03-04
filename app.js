@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 
 const routeProducts = require("./routes/products");
 const routeRequest = require("./routes/requests");
+const routeUser = require("./routes/user");
 
 app.use(morgan("dev"));
 app.use('/uploads', express.static('uploads'))
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 
 app.use("/products", routeProducts);
 app.use("/requests", routeRequest);
+app.use("/users", routeUser);
 app.use((req, res, next) => {
   const erro = new Error("Não encontrado!");
   erro.status = 404;
