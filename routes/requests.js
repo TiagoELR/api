@@ -8,27 +8,34 @@ router.get("/", (req, res, next) => {
     if (err) {
       return res.status(500).send({ error: err });
     }
-    conn.query("SELECT * FROM requests;", (error, result, fields) => {
-      if (error) {
-        return res.status(500).send({ error: error });
+    conn.query(
+      "SELECT requests.id, requests.quantity, products.id, products.name, products.price FROM requests INNER JOIN products ON products.id = requests.products_id",
+      (error, result, fields) => {
+        if (error) {
+          return res.status(500).send({ error: error });
+        }
+        const response = {
+          quantity: result.length,
+          requests: result.map((request) => {
+            return {
+              id: request.id,
+              quantity: request.quantity,
+              product: {
+                products_id: request.products_id,
+                name: request.name,
+                price: request.price
+              },
+              request: {
+                type: "GET",
+                description: "Return a especific request",
+                url: "http://localhost:8081/requests/" + request.id
+              }
+            };
+          })
+        };
+        return res.status(200).send(response);
       }
-      const response = {
-        quantity: result.length,
-        requests: result.map((request) => {
-          return {
-            id: request.id,
-            products_id: request.products_id,
-            quantity: request.quantity,
-            request: {
-              type: "GET",
-              description: "Return a especific request",
-              url: "http://localhost:8081/requests/" + request.id
-            }
-          };
-        })
-      };
-      return res.status(200).send(response);
-    });
+    );
   });
 });
 

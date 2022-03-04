@@ -7,6 +7,7 @@ const routeProducts = require("./routes/products");
 const routeRequest = require("./routes/requests");
 
 app.use(morgan("dev"));
+app.use('/uploads', express.static('uploads'))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 

@@ -1,6 +1,29 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("../mysql").pool;
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Math.random().toString().substring(3) + file.originalname);
+  }
+});
+const fileFilterByMime = (req, file, cb) => {
+  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: fileFilterByMime
+ });
 
 router.get("/", (req, res, next) => {
   mysql.getConnection((err, conn) => {
@@ -18,6 +41,7 @@ router.get("/", (req, res, next) => {
             id: prod.id,
             name: prod.name,
             preco: prod.price,
+            img: prod.img,
             request: {
               type: "GET",
               description: "Return a especific product.",
@@ -31,14 +55,14 @@ router.get("/", (req, res, next) => {
   });
 });
 
-router.post("/", (req, res, next) => {
+router.post("/", upload.single("img"), (req, res, next) => {
   mysql.getConnection((err, conn) => {
     if (err) {
       return res.status(500).send({ error: err });
     }
     conn.query(
-      "INSERT INTO products (name, price) VALUES (?, ?)",
-      [req.body.name, req.body.price],
+      "INSERT INTO products (name, price, img) VALUES (?, ?, ?)",
+      [req.body.name, req.body.price, req.file.path],
       (error, result, fields) => {
         conn.release();
         if (error) {
@@ -50,6 +74,7 @@ router.post("/", (req, res, next) => {
             id: result.insertId,
             name: req.body.name,
             price: req.body.price,
+            img: req.file.path,
             request: {
               type: "GET",
               description: "Return all products.",
@@ -86,6 +111,7 @@ router.get("/:id", (req, res, next) => {
             id: result[0].id,
             name: result[0].name,
             price: result[0].price,
+            img: result[0].img,
             request: {
               type: "GET",
               description: "Return all products.",
