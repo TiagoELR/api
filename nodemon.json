@@ -1,10 +1,10 @@
 {
     "env": {
-        "MYSQL_USER": "gtjqnfbgeupkbf",
-        "MYSQL_PASSWORD": "59096e92b9b9a01c3aa42ce078a594ef4f1f0640a3da6d6435d0b8431bdff7dc",
-        "MYSQL_DATABASE": "d10jjn41r74i2c",
-        "MYSQL_HOST": "ec2-44-192-245-97.compute-1.amazonaws.com",
-        "MYSQL_PORT": 5432,
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": "root",
+        "MYSQL_DATABASE": "nodeapi",
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": 3306,
 
         "JWT_KEY": "secret"
     }
