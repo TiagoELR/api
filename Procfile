@@ -1,1 +1,2 @@
-web: node server.js
+npm cache clean --force  
+web: node server.js 
