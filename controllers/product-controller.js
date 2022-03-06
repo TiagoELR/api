@@ -3,7 +3,7 @@ const mysql = require("../mysql").pool;
 exports.getAllProducts = (req, res, next) => {
   mysql.getConnection((err, conn) => {
     if (err) {
-      return res.status(500).send({ err: err });
+      return res.status(500).send({ erro: err });
     }
     conn.query("SELECT * FROM products;", (error, result, fields) => {
       if (error) {
